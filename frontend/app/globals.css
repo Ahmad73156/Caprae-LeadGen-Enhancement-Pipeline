@@ -1,0 +1,245 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --crystal-bg: 2 6 23;
+  --crystal-edge: 255 255 255 / 0.1;
+  --crystal-fill: 255 255 255 / 0.05;
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-950 text-slate-200 antialiased;
+    background-color: rgb(var(--crystal-bg));
+    min-height: 100dvh;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'ss01';
+  }
+
+  ::selection {
+    background: rgba(129, 140, 248, 0.35);
+    color: #f8fafc;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(165, 180, 252, 0.9);
+    outline-offset: 2px;
+    border-radius: 0.75rem;
+  }
+
+  input,
+  textarea,
+  select {
+    color-scheme: dark;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.18);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+
+  /* Ambient light field that sits behind every panel. */
+  .ambient-field {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .ambient-orb {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(120px);
+    opacity: 0.55;
+    will-change: transform;
+  }
+
+  .ambient-grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(to right,
+        rgba(255, 255, 255, 0.035) 1px,
+        transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 80% 55% at 50% 0%, #000 35%, transparent 78%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 55% at 50% 0%,
+        #000 35%,
+        transparent 78%);
+  }
+
+  /* Core crystal panel: translucent fill, blurred backdrop, specular top edge. */
+  .crystal {
+    @apply relative rounded-3xl border border-white/10 bg-white/5 shadow-crystal;
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+
+  .crystal-lg {
+    @apply relative rounded-4xl border border-white/10 bg-white/5 shadow-crystal-lg;
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+  }
+
+  /* Specular highlight riding along the top border. */
+  .crystal-specular::before {
+    content: '';
+    position: absolute;
+    inset-inline: 12%;
+    top: -1px;
+    height: 1px;
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.65),
+        transparent);
+    pointer-events: none;
+  }
+
+  /* Soft inner reflection along the upper third of a card. */
+  .crystal-reflection::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.07) 0%,
+        rgba(255, 255, 255, 0.02) 32%,
+        transparent 64%);
+    pointer-events: none;
+  }
+
+  .crystal-input {
+    @apply w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .crystal-input:hover {
+    @apply border-white/20 bg-white/[0.06];
+  }
+
+  .crystal-input:focus {
+    @apply border-indigo-300/50 bg-white/[0.07] outline-none;
+    box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.14);
+  }
+
+  .crystal-button {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-2xl border border-white/[0.15] bg-white/10 px-5 py-3 text-sm font-medium text-slate-50;
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .crystal-button:hover:not(:disabled) {
+    @apply border-white/25 bg-white/[0.16];
+  }
+
+  .crystal-button:active:not(:disabled) {
+    transform: scale(0.982);
+  }
+
+  .crystal-button:disabled {
+    @apply cursor-not-allowed opacity-45;
+  }
+
+  .crystal-button-primary {
+    background: linear-gradient(180deg,
+        rgba(129, 140, 248, 0.42),
+        rgba(79, 70, 229, 0.3));
+    @apply border-indigo-300/30 text-white shadow-glow;
+  }
+
+  .crystal-button-primary:hover:not(:disabled) {
+    background: linear-gradient(180deg,
+        rgba(129, 140, 248, 0.55),
+        rgba(79, 70, 229, 0.38));
+    @apply border-indigo-200/[0.45];
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .pill-high {
+    @apply border-teal-300/25 bg-teal-300/10 text-teal-200;
+  }
+
+  .pill-medium {
+    @apply border-amber-300/25 bg-amber-300/10 text-amber-200;
+  }
+
+  .pill-low {
+    @apply border-rose-400/25 bg-rose-400/10 text-rose-200;
+  }
+
+  .pill-neutral {
+    @apply border-white/[0.12] bg-white/5 text-slate-300;
+  }
+
+  .drop-zone {
+    @apply relative flex flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-white/[0.15] bg-white/[0.03] px-6 py-10 text-center;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: border-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .drop-zone-active {
+    @apply border-indigo-300/[0.55] bg-indigo-400/[0.09];
+  }
+
+  .divider-soft {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
